@@ -1,0 +1,38 @@
+name: Generate JSON file from Sketch Library
+
+on:
+  push:
+    paths:
+      - color-library.sketch
+      - .github/workflows/**.yml
+    branches: [main]
+  pull_request:
+    paths:
+      - color-library.sketch
+      - .github/workflows/**.yml
+    branches: [main]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'true'
+      - name: Install node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+      - name: Install dependencies
+        run: yarn install
+      - name: Generate JSON
+        run: yarn start
+      - name: Push changes in JSON to repo
+        uses: actions-x/commit@v2
+        with:
+          email: developer@sketch.com
+          name: Sketch Developer
+          files: colors.json
